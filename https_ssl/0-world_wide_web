@@ -14,9 +14,9 @@ then
 elif [ $# -eq 1 ]
 then
     domain_info "$1" "www"
-    domain_info "$1" "lb-01"
-    domain_info "$1" "web-01"
-    domain_info "$1" "web-02"
+    domain_info "$1" "34.230.18.60"
+    domain_info "$1" "34.234.91.148"
+    domain_info "$1" "52.207.146.225"
 else
     domain_info "$1" "$2"
 fi
