@@ -32,21 +32,16 @@ defaults
         errorfile 502 /etc/haproxy/errors/502.http
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
-frontend www-http
-    bind *:80
-    mode http
-    default_backend web-backend
-frontend www-https
-    bind *:443 ssl crt /etc/haproxy/astrobooysen.tech.pem
-    http-request set-header X-Forwarded-Proto https
-    acl letsencrypt-acl path_beg /.well-known/acme-challenge/
-    use_backend letsencrypt-backend if letsencrypt-acl
-    default_backend web-backend
 
-backend web-backend
-    redirect scheme https unless { ssl_fc }
-    balance roundrobin
-    server 4973-web-01 34.234.91.148:80 check
-    server 4973-web-02 	52.207.146.225:80 check
-backend letsencrypt-backend
-   server letsencrypt 127.0.0.1:54321
+frontend haproxynode
+	bind *:80
+	bind *:443 ssl crt /etc/ssl/www.astrobooysen.tech/www.astrobooysen.tech.pem
+	default_backend backendnodes
+
+backend backendnodes
+	balance roundrobin
+        option forwardfor
+        http-request set-header X-Forwarded-Port %[dst_port]
+        http-request add-header X-Forwarded-Proto https if { ssl_fc }
+	server 4973-web-01 34.234.91.148:80 check
+        server 4973-web-02 52.207.146.225:80 check
