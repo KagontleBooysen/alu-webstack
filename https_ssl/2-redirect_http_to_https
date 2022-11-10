@@ -1,4 +1,5 @@
 global
+        ssl-server-verify none
         log /dev/log    local0
         log /dev/log    local1 notice
         chroot /var/lib/haproxy
@@ -32,21 +33,14 @@ defaults
         errorfile 502 /etc/haproxy/errors/502.http
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
-frontend www-http
-    bind *:80
-    mode http
-    default_backend web-backend
-frontend www-https
-    bind *:443 ssl crt /etc/ssl/certs/www.astrobooysen.tech.pem
-    http-request set-header X-Forwarded-Proto https
-    acl letsencrypt-acl path_beg /.well-known/acme-challenge/
-    use_backend letsencrypt-backend if letsencrypt-acl
-    default_backend web-backend
-
-backend web-backend
-    redirect scheme https unless { ssl_fc }
-    balance roundrobin
-    server 4973-web-01 34.234.91.148:80 check
-    server 4973-web-02 52.207.146.225:80 check
-backend letsencrypt-backend
-   server letsencrypt 127.0.0.1:54321
+frontend www
+        mode http
+        bind *:80
+        bind *:443 ssl crt /etc/ssl/certs/www.astrobooysen.tech.pem
+        ttp-request redirect scheme https unless { ssl_fc }
+        default_backend webservers
+backend webservers
+        mode http
+        balance roundrobin
+        server 4973-web-01 34.234.91.148:80 check
+        server 4973-web-02 52.207.146.225:80 check
