@@ -1,4 +1,5 @@
 global
+        ssl-server-verify none
         log /dev/log    local0
         log /dev/log    local1 notice
         chroot /var/lib/haproxy
@@ -32,16 +33,14 @@ defaults
         errorfile 502 /etc/haproxy/errors/502.http
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
-
-frontend haproxynode
-	bind *:80
-	bind *:443 ssl crt /etc/ssl/certs/www.astrobooysen.tech.pem
-	default_backend backendnodes
-
-backend backendnodes
-	balance roundrobin
-        option forwardfor
-        http-request set-header X-Forwarded-Port %[dst_port]
-        http-request add-header X-Forwarded-Proto https if { ssl_fc }
-	server 4973-web-01 34.234.91.148:80 check
+frontend www
+        mode http
+        bind *:80
+        bind *:443 ssl crt /etc/ssl/certs/www.astrobooysen.tech.pem
+        ttp-request redirect scheme https unless { ssl_fc }
+        default_backend webservers
+backend webservers
+        mode http
+        balance roundrobin
+        server 4973-web-01 34.234.91.148:80 check
         server 4973-web-02 52.207.146.225:80 check
