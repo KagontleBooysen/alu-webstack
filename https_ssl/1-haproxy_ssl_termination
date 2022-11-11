@@ -1,8 +1,4 @@
-global
-<<<<<<< HEAD
-=======
-        ssl-server-verify none
->>>>>>> a5a38ef0d311e99f4e7258a880a8c554b06f63ca
+	global
         log /dev/log    local0
         log /dev/log    local1 notice
         chroot /var/lib/haproxy
@@ -36,7 +32,6 @@ defaults
         errorfile 502 /etc/haproxy/errors/502.http
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
-<<<<<<< HEAD
 
 frontend haproxynode
 	bind *:80
@@ -50,17 +45,3 @@ backend backendnodes
         http-request add-header X-Forwarded-Proto https if { ssl_fc }
 	server 4973-web-01 34.234.91.148:80 check
         server 4973-web-02 52.207.146.225:80 check
-
-=======
-frontend www
-        mode http
-        bind *:80
-        bind *:443 ssl crt /etc/letsencrypt/live/www.astrobooysen.tech/fullchain.pem
-        ttp-request redirect scheme https unless { ssl_fc }
-        default_backend webservers
-backend webservers
-        mode http
-        balance roundrobin
-        server 4973-web-01 34.234.91.148:80 check
-        server 4973-web-02 52.207.146.225:80 check
->>>>>>> a5a38ef0d311e99f4e7258a880a8c554b06f63ca
